@@ -3,8 +3,8 @@
 __all__ = [
     "tariff",
     "loader",
-    "simulate",
-    "questions",
-    "compare",
-    "bonus",
+    "balance_rebuild",
+    "family_projection",
+    "recharge_habits",
+    "diagnostics",
 ]

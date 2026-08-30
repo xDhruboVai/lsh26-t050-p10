@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from decimal import Decimal
 
+from p10_prepaid.balance_rebuild import rebuild_balance_timeline, reconciliation_delta
 from p10_prepaid.loader import validate_case
-from p10_prepaid.simulate import rebuild_balance_timeline, reconciliation_delta
 
 
 def test_rebuild_balance_timeline_reconciles():

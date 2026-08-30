@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from decimal import Decimal
 
-from p10_prepaid.questions import recharge_needed, run_out_date
+from p10_prepaid.family_projection import recharge_needed, run_out_date
 
 
 def test_run_out_date_basic_case():

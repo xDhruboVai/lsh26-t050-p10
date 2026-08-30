@@ -3,8 +3,8 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from .balance_rebuild import rebuild_balance_timeline
 from .loader import load_cases, validate_case
-from .simulate import rebuild_balance_timeline
 
 
 def main() -> None:

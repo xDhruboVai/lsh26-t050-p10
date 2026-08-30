@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from decimal import Decimal
 
-from p10_prepaid.compare import low_balance_habit, monthly_habit
+from p10_prepaid.recharge_habits import low_balance_habit, monthly_habit
 
 
 def test_habits_have_identical_energy_costs_under_same_usage():
