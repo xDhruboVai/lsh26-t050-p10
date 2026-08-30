@@ -3,7 +3,7 @@
   "team_id": "LSH26-T050",
   "problem_id": "P10",
   "repository_name": "lsh26-t050-p10",
-  "live_url": "https://lsh26-t050-p10.vercel.app",
+  "live_url": "https://hackathon-p10.vercel.app",
   "demo_video_url_optional": "",
   "event_start_code": "LSH26-8490-C900",
   "final_submission_commit_sha": "2c0cbd470f53f5f33612a2a47b3e5b45a086c421",
@@ -16,7 +16,7 @@
     }
   ],
   "sample_data": {
-    "loads_published_fixture": true,
+    "prepaid_meter_public_fixture": true,
     "method": "file upload and seeded on start",
     "reset_instructions": "Published test cases are provided in data/data.json and data/edge.json. Users can upload their own recharge history JSON or select from built-in cases. See frontend Dashboard.tsx for case selection and data loading."
   },
