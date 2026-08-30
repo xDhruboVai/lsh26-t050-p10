@@ -6,7 +6,7 @@ A deterministic prepaid meter billing engine with an industrial-grade web UI. Th
 **Team:** LSH26-T050  
 **Problem:** P10 (Prepaid Meter Recharge Advisor)  
 **Event Start Code:** LSH26-8490-C900  
-**Live URL:** https://lsh26-t050-p10.vercel.app  
+**Live URL:** hackathon-p10.vercel.app
 
 ## Problem Overview
 
