@@ -242,30 +242,31 @@ def get_run_out(case_id: str, daily_units: Optional[int] = None):
 
 
 @app.get("/api/recharge-needed/{case_id}", response_model=RechargeResponse)
-def get_recharge_needed(case_id: str, target_date: Optional[str] = None):
-    """Get required recharge amount and breakdown."""
+def get_recharge_needed(case_id: str, target_date: Optional[str] = None, daily_units: Optional[int] = None):
+    """Get required recharge amount and 4-part breakdown."""
     if case_id not in CASES_CACHE:
         raise HTTPException(status_code=404, detail=f"Case {case_id} not found")
-    
+
     case = CASES_CACHE[case_id]
     try:
         validate_case(case)
         timeline = rebuild_balance_timeline(case)
         balance_today = timeline[-1]["balance_after"]
-        result = recharge_needed(
+        usage = int(case["usual_daily_units"] if daily_units is None else daily_units)
+        breakdown = recharge_needed(
             balance_today,
             case["target_date"] if target_date is None else target_date,
-            int(case["usual_daily_units"]),
+            usage,
             case["today"],
         )
-        
+
         return RechargeResponse(
-            required_amount=str(result),
-            base_energy=str(result),
-            slab_penalty="0.00",
-            fixed_charges="0.00",
-            vat="0.00",
-            breakdown_valid=False,
+            required_amount=str(breakdown["required_amount"]),
+            base_energy=str(breakdown["base_energy"]),
+            slab_penalty=str(breakdown["slab_penalty"]),
+            fixed_charges=str(breakdown["fixed_charges"]),
+            vat=str(breakdown["vat"]),
+            breakdown_valid=True,
         )
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

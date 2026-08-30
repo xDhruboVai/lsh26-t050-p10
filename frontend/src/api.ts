@@ -98,8 +98,11 @@ class ApiClient {
     return response.data;
   }
 
-  async getRechargeNeeded(caseId: string, targetDate?: string): Promise<RechargeResponse> {
-    const response = await this.client.get<RechargeResponse>(`/recharge-needed/${caseId}`, { params: targetDate === undefined ? {} : { target_date: targetDate } });
+  async getRechargeNeeded(caseId: string, targetDate?: string, dailyUnits?: number): Promise<RechargeResponse> {
+    const params: Record<string, string | number> = {};
+    if (targetDate !== undefined) params.target_date = targetDate;
+    if (dailyUnits !== undefined) params.daily_units = dailyUnits;
+    const response = await this.client.get<RechargeResponse>(`/recharge-needed/${caseId}`, { params });
     return response.data;
   }
 

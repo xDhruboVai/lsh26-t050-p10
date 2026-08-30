@@ -2,8 +2,11 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 from decimal import Decimal
+from typing import Dict
 
-from .tariff import FIXED_CHARGE_TOTAL, cost_of_day, vat_on_energy
+from .tariff import FIXED_CHARGE_TOTAL, SLAB_TABLE, cost_of_day, vat_on_energy
+
+_SLAB_1_RATE = SLAB_TABLE[0][2]
 
 
 def run_out_date(
@@ -35,23 +38,51 @@ def recharge_needed(
     target_date: str,
     usual_daily_units: int,
     start_date: str = "2026-01-01",
-) -> Decimal:
-    """Compute the smallest recharge needed so the balance stays non-negative through target_date."""
+) -> Dict[str, Decimal]:
+    """Compute the smallest recharge needed so the balance stays non-negative through target_date.
+
+    Returns a breakdown dict:
+      {required_amount, base_energy, slab_penalty, fixed_charges, vat}
+    All values are Decimal quantized to 2 decimal places.
+    """
     if usual_daily_units < 0:
         raise ValueError("usual_daily_units must be non-negative")
 
     target = datetime.strptime(target_date, "%Y-%m-%d").date()
-    balance = Decimal(balance_today)
     month_running_units = 0
     current_date = datetime.strptime(start_date, "%Y-%m-%d")
-    total_cost = Decimal("0.00")
+
+    actual_energy = Decimal("0.00")
+    base_energy_acc = Decimal("0.00")
+    months_spanned: set[str] = set()
+
+    start_datetime = current_date
 
     while current_date.date() <= target:
+        months_spanned.add(current_date.strftime("%Y-%m"))
         if current_date.day == 1:
             month_running_units = 0
         energy_cost, month_running_units, _ = cost_of_day(month_running_units, usual_daily_units)
-        total_cost += energy_cost + vat_on_energy(energy_cost)
+        actual_energy += energy_cost
+        base_energy_acc += (Decimal(usual_daily_units) * _SLAB_1_RATE).quantize(Decimal("0.01"))
         current_date += timedelta(days=1)
 
-    required = max(Decimal("0.00"), total_cost - balance)
-    return required.quantize(Decimal("0.01"))
+    vat_total = vat_on_energy(actual_energy)
+    slab_penalty = (actual_energy - base_energy_acc).quantize(Decimal("0.01"))
+    if slab_penalty < 0:
+        slab_penalty = Decimal("0.00")
+
+    fixed = (FIXED_CHARGE_TOTAL * Decimal(len(months_spanned))).quantize(Decimal("0.01"))
+
+    total_needed = (actual_energy + vat_total + fixed).quantize(Decimal("0.01"))
+    required = (total_needed - Decimal(balance_today)).quantize(Decimal("0.01"))
+    if required < 0:
+        required = Decimal("0.00")
+
+    return {
+        "required_amount": required,
+        "base_energy": base_energy_acc.quantize(Decimal("0.01")),
+        "slab_penalty": slab_penalty,
+        "fixed_charges": fixed,
+        "vat": vat_total.quantize(Decimal("0.01")),
+    }
