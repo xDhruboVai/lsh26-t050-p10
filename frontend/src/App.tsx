@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Theme, colors } from './theme';
 import Navigation from './components/Navigation';
@@ -9,6 +9,7 @@ import Comparison from './pages/Comparison';
 import Settings from './pages/Settings';
 import Questions from './pages/Questions';
 import TariffReference from './pages/TariffReference';
+import { apiClient, CaseListItem } from './api';
 
 // Theme Context
 interface ThemeContextType {
@@ -48,14 +49,44 @@ const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
 const App: React.FC = () => {
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
+  const [cases, setCases] = useState<CaseListItem[]>([]);
+  const [casesLoading, setCasesLoading] = useState(true);
+
+  const refreshCases = useCallback(async () => {
+    setCasesLoading(true);
+    try {
+      const data = await apiClient.listCases();
+      setCases(data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setCasesLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    refreshCases();
+  }, [refreshCases]);
 
   return (
     <ThemeProvider>
       <Router>
         <div className="app-shell" style={{ display: 'flex', height: '100vh' }}>
-          <Navigation selectedCaseId={selectedCaseId} onSelectCase={setSelectedCaseId} />
+          <Navigation
+            selectedCaseId={selectedCaseId}
+            onSelectCase={setSelectedCaseId}
+            cases={cases}
+            casesLoading={casesLoading}
+          />
           <Routes>
-            <Route path="/" element={<Dashboard onSelectCase={setSelectedCaseId} />} />
+            <Route path="/" element={
+              <Dashboard
+                onSelectCase={setSelectedCaseId}
+                cases={cases}
+                casesLoading={casesLoading}
+                refreshCases={refreshCases}
+              />
+            } />
             <Route path="/timeline" element={
               selectedCaseId ? <Timeline caseId={selectedCaseId} /> : <Navigate to="/" />
             } />
