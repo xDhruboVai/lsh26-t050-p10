@@ -1,0 +1,48 @@
+{
+  "release_version": "2.2",
+  "team_id": "LSH26-T###",
+  "problem_id": "P##",
+  "repository_name": "lsh26-t###-p##",
+  "live_url": "",
+  "demo_video_url_optional": "",
+  "event_start_code": "",
+  "repository_created_before_release": false,
+  "pre_event_materials": [
+    {
+      "name": "",
+      "source_or_original_location": "",
+      "what_was_present_before_6pm": ""
+    }
+  ],
+  "sample_data": {
+    "loads_published_fixture": true,
+    "method": "file upload | typed entry | seeded on start",
+    "reset_instructions": ""
+  },
+  "problem_solving_method": "short explanation of the team's approach and why it was chosen",
+  "requirements": {
+    "R1": {"status": "complete|partial|not_attempted", "evidence": "screen, route or file path"},
+    "R2": {"status": "complete|partial|not_attempted", "evidence": "screen, route or file path"},
+    "R3": {"status": "complete|partial|not_attempted", "evidence": "screen, route or file path"},
+    "R4": {"status": "complete|partial|not_attempted", "evidence": "screen, route or file path"}
+  },
+  "team_members": [
+    {
+      "registered_name": "",
+      "github_username": "",
+      "major_contribution": "",
+      "evidence_paths_or_commits": []
+    }
+  ],
+  "major_design_decisions": [],
+  "known_limitations": [],
+  "ai_tools_used": [
+    {
+      "tool": "",
+      "used_for": "",
+      "how_output_was_verified": ""
+    }
+  ],
+  "licenses_file": "LICENSES.md",
+  "declaration": "The information above is complete and truthful to the best of the team's knowledge ."
+}

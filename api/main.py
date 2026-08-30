@@ -86,7 +86,6 @@ class RunOutResponse(BaseModel):
 class RechargeResponse(BaseModel):
     required_amount: str
     base_energy: str
-    slab_penalty: str
     fixed_charges: str
     vat: str
     breakdown_valid: bool
@@ -263,7 +262,6 @@ def get_recharge_needed(case_id: str, target_date: Optional[str] = None, daily_u
         return RechargeResponse(
             required_amount=str(breakdown["required_amount"]),
             base_energy=str(breakdown["base_energy"]),
-            slab_penalty=str(breakdown["slab_penalty"]),
             fixed_charges=str(breakdown["fixed_charges"]),
             vat=str(breakdown["vat"]),
             breakdown_valid=True,

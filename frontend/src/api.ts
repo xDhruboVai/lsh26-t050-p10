@@ -34,7 +34,6 @@ export interface RunOutResponse {
 export interface RechargeResponse {
   required_amount: string;
   base_energy: string;
-  slab_penalty: string;
   fixed_charges: string;
   vat: string;
   breakdown_valid: boolean;
