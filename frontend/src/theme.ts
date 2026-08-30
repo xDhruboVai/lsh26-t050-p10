@@ -166,7 +166,7 @@ export const skeumorphic = {
     boxShadow: theme === 'light'
       ? 'inset 5px 5px 10px rgba(115, 100, 138, 0.20), inset -4px -4px 8px rgba(255, 255, 255, 0.7)'
       : 'inset 5px 5px 10px rgba(0, 0, 0, 0.40), inset -3px -3px 8px rgba(163, 147, 191, 0.05)',
-    border: `1px solid ${theme === 'light' ? '#D0D0D0' : '#2A3A4A'}`,
+    border: `1px solid ${theme === 'light' ? '#C8BDD5' : '#453750'}`,
   }),
 
   // Card style (subtle depth)
@@ -182,24 +182,24 @@ export const skeumorphic = {
   // Input field (recessed)
   input: (theme: Theme) => ({
     background: theme === 'light'
-      ? 'linear-gradient(to bottom, #FAFAFA, #FFFFFF)'
-      : 'linear-gradient(to bottom, #0A0E15, #151D2A)',
+      ? 'linear-gradient(to bottom, #F8F6FA, #FFFFFF)'
+      : 'linear-gradient(to bottom, #17121c, #241C2A)',
     boxShadow: theme === 'light'
-      ? 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06), inset 0 1px 1px 0 rgba(0, 0, 0, 0.03)'
-      : 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.3), inset 0 1px 1px 0 rgba(0, 0, 0, 0.2)',
-    border: `1px solid ${theme === 'light' ? '#D5D5D5' : '#2A3F4F'}`,
+      ? 'inset 4px 4px 8px rgba(115, 100, 138, 0.16), inset -3px -3px 7px rgba(255, 255, 255, 0.72)'
+      : 'inset 4px 4px 8px rgba(0, 0, 0, 0.42), inset -3px -3px 7px rgba(163, 147, 191, 0.05)',
+    border: `1px solid ${theme === 'light' ? '#C8BDD5' : '#453750'}`,
     borderRadius: borders.radius_md,
   }),
 
   // Gauge / metric display
   gauge: (theme: Theme) => ({
     background: theme === 'light'
-      ? 'radial-gradient(circle, #F5F5F5, #E0E0E0)'
-      : 'radial-gradient(circle, #2A3F4F, #1A2E3F)',
+      ? 'radial-gradient(circle, #F8F6FA, #D8D0E2)'
+      : 'radial-gradient(circle, #453750, #241C2A)',
     boxShadow: theme === 'light'
-      ? '0 4px 12px 0 rgba(0, 0, 0, 0.1), inset 0 2px 4px 0 rgba(255, 255, 255, 0.5)'
-      : '0 4px 12px 0 rgba(0, 0, 0, 0.4), inset 0 2px 4px 0 rgba(255, 255, 255, 0.05)',
-    border: `2px solid ${theme === 'light' ? '#D0D0D0' : '#3A5A7A'}`,
+      ? '8px 8px 16px rgba(115, 100, 138, 0.18), -5px -5px 12px rgba(255, 255, 255, 0.78)'
+      : '8px 8px 16px rgba(0, 0, 0, 0.42), -5px -5px 12px rgba(163, 147, 191, 0.05)',
+    border: `2px solid ${theme === 'light' ? '#C8BDD5' : '#73648A'}`,
   }),
 };
 

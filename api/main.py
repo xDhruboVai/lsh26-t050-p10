@@ -142,21 +142,26 @@ def list_cases():
     return sorted(items, key=lambda x: x.case_id)
 
 
-@app.post("/api/cases/upload", response_model=CaseListItem)
-def upload_case(case: dict):
+@app.post("/api/cases/upload", response_model=list[CaseListItem])
+def upload_case(document: dict):
     try:
-        prepared = _prepare_case(case)
-        if not prepared.get("case_id"):
-            raise ValueError("Uploaded case must include case_id.")
-        validate_case(prepared)
-        CASES_CACHE[prepared["case_id"]] = prepared
-        return CaseListItem(
-            case_id=prepared["case_id"],
-            opening_balance=str(prepared.get("opening_balance_bdt", "0.00")),
-            days_count=len(prepared.get("days", [])),
-            recharges_count=len(prepared.get("recharges", [])),
-            today=prepared["today"],
-        )
+        cases = document.get("cases") if isinstance(document.get("cases"), list) else [document]
+        prepared_cases = []
+        for case in cases:
+            prepared = _prepare_case(case)
+            if not prepared.get("case_id"):
+                raise ValueError("Every uploaded case must include case_id.")
+            validate_case(prepared)
+            prepared_cases.append(prepared)
+
+        CASES_CACHE.update({case["case_id"]: case for case in prepared_cases})
+        return [CaseListItem(
+            case_id=case["case_id"],
+            opening_balance=str(case.get("opening_balance_bdt", "0.00")),
+            days_count=len(case.get("days", [])),
+            recharges_count=len(case.get("recharges", [])),
+            today=case["today"],
+        ) for case in prepared_cases]
     except Exception as error:
         raise HTTPException(status_code=400, detail=str(error))
 

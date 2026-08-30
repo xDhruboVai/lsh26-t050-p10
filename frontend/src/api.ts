@@ -78,8 +78,8 @@ class ApiClient {
     return response.data;
   }
 
-  async uploadCase(content: string): Promise<CaseListItem> {
-    const response = await this.client.post<CaseListItem>('/cases/upload', JSON.parse(content));
+  async uploadCase(content: string): Promise<CaseListItem[]> {
+    const response = await this.client.post<CaseListItem[]>('/cases/upload', JSON.parse(content));
     return response.data;
   }
 

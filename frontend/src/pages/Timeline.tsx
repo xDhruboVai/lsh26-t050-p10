@@ -369,7 +369,7 @@ const Timeline: React.FC<TimelineProps> = ({ caseId }) => {
                         color: parseFloat(entry.recharge) > 0 ? colors.success : colors.text_tertiary,
                         fontWeight: parseFloat(entry.recharge) > 0 ? 600 : 400,
                       }}>
-                        {parseFloat(entry.recharge) > 0 ? `+${entry.recharge}` : '—'}
+                        {parseFloat(entry.recharge) > 0 ? `+${entry.recharge}` : 'None'}
                       </td>
                     </tr>)}
                   </React.Fragment>)}

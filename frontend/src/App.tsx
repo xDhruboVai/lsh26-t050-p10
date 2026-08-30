@@ -29,12 +29,12 @@ export const useTheme = () => {
 
 const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>(() => {
-    const saved = localStorage.getItem('theme') as Theme | null;
+    const saved = localStorage.getItem('p10-theme-preference') as Theme | null;
     return saved || 'light';
   });
 
   useEffect(() => {
-    localStorage.setItem('theme', theme);
+    localStorage.setItem('p10-theme-preference', theme);
     // Apply theme to document root if needed
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
@@ -52,7 +52,7 @@ const App: React.FC = () => {
   return (
     <ThemeProvider>
       <Router>
-        <div style={{ display: 'flex', height: '100vh' }}>
+        <div className="app-shell" style={{ display: 'flex', height: '100vh' }}>
           <Navigation selectedCaseId={selectedCaseId} onSelectCase={setSelectedCaseId} />
           <Routes>
             <Route path="/" element={<Dashboard onSelectCase={setSelectedCaseId} />} />

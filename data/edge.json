@@ -1,0 +1,125 @@
+{
+  "schema_version": "2.1",
+  "problem_id": "P10_EDGE_TESTS",
+  "cases": [
+    {
+      "case_id": "EDGE-01",
+      "opening_balance_bdt": "0.00",
+      "days": [
+        { "date": "2026-01-01", "units": 0 },
+        { "date": "2026-01-02", "units": 0 },
+        { "date": "2026-01-03", "units": 0 }
+      ],
+      "recharges": [],
+      "today": "2026-01-03",
+      "usual_daily_units": 0,
+      "target_date": "2026-01-04",
+      "comparison": {
+        "months": ["2026-01"],
+        "source": "readings",
+        "daily_units": null,
+        "opening_balance_bdt": "0.00",
+        "low_threshold_bdt": "50.00",
+        "low_amount_bdt": "500.00",
+        "monthly_amount_bdt": "500.00"
+      }
+    },
+    {
+      "case_id": "EDGE-02",
+      "opening_balance_bdt": "100.00",
+      "days": [
+        { "date": "2026-01-30", "units": 55 },
+        { "date": "2026-01-31", "units": 60 },
+        { "date": "2026-02-01", "units": 50 },
+        { "date": "2026-02-02", "units": 45 }
+      ],
+      "recharges": [
+        { "date": "2026-01-30", "amount_bdt": "5000.00" }
+      ],
+      "today": "2026-02-02",
+      "usual_daily_units": 50,
+      "target_date": "2026-02-28",
+      "comparison": {
+        "months": ["2026-01", "2026-02"],
+        "source": "readings",
+        "daily_units": null,
+        "opening_balance_bdt": "100.00",
+        "low_threshold_bdt": "500.00",
+        "low_amount_bdt": "3000.00",
+        "monthly_amount_bdt": "5000.00"
+      }
+    },
+    {
+      "case_id": "EDGE-03",
+      "opening_balance_bdt": "25.50",
+      "days": [
+        { "date": "2026-03-01", "units": 12 },
+        { "date": "2026-03-02", "units": 15 },
+        { "date": "2026-03-03", "units": 10 }
+      ],
+      "recharges": [
+        { "date": "2026-03-02", "amount_bdt": "100.00" },
+        { "date": "2026-03-02", "amount_bdt": "200.00" },
+        { "date": "2026-03-02", "amount_bdt": "500.00" }
+      ],
+      "today": "2026-03-03",
+      "usual_daily_units": 12,
+      "target_date": "2026-03-15",
+      "comparison": {
+        "months": ["2026-03"],
+        "source": "readings",
+        "daily_units": null,
+        "opening_balance_bdt": "25.50",
+        "low_threshold_bdt": "200.00",
+        "low_amount_bdt": "1000.00",
+        "monthly_amount_bdt": "1000.00"
+      }
+    },
+    {
+      "case_id": "EDGE-04",
+      "opening_balance_bdt": "500.00",
+      "days": [
+        { "date": "2026-04-01", "units": 8 },
+        { "date": "2026-04-02", "units": 9 }
+      ],
+      "recharges": [],
+      "today": "2026-04-02",
+      "usual_daily_units": 10,
+      "target_date": "2026-04-03",
+      "comparison": {
+        "months": ["2026-04"],
+        "source": "fixed",
+        "daily_units": 25,
+        "opening_balance_bdt": "0.00",
+        "low_threshold_bdt": "100.00",
+        "low_amount_bdt": "2000.00",
+        "monthly_amount_bdt": "2000.00"
+      }
+    },
+    {
+      "case_id": "EDGE-05",
+      "opening_balance_bdt": "0.05",
+      "days": [
+        { "date": "2028-02-27", "units": 14 },
+        { "date": "2028-02-28", "units": 15 },
+        { "date": "2028-02-29", "units": 16 },
+        { "date": "2028-03-01", "units": 10 }
+      ],
+      "recharges": [
+        { "date": "2028-02-27", "amount_bdt": "1500.00" }
+      ],
+      "today": "2028-03-01",
+      "usual_daily_units": 15,
+      "target_date": "2028-03-31",
+      "comparison": {
+        "months": ["2028-02", "2028-03"],
+        "source": "readings",
+        "daily_units": null,
+        "opening_balance_bdt": "0.05",
+        "low_threshold_bdt": "150.00",
+        "low_amount_bdt": "2500.00",
+        "monthly_amount_bdt": "3000.00"
+      }
+    }
+  ]
+}

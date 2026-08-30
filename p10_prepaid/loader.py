@@ -37,10 +37,6 @@ def validate_case(case: Dict[str, Any]) -> None:
     if not isinstance(days, list) or not days:
         raise ValueError(f"Case {case.get('case_id')} has no day readings.")
 
-    first_day = datetime.strptime(days[0]["date"], "%Y-%m-%d").date()
-    if first_day.day != 1:
-        raise ValueError(f"Case {case.get('case_id')} must start on the 1st of a month.")
-
     for index in range(1, len(days)):
         prev_date = datetime.strptime(days[index - 1]["date"], "%Y-%m-%d").date()
         curr_date = datetime.strptime(days[index]["date"], "%Y-%m-%d").date()

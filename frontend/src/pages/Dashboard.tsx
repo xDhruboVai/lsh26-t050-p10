@@ -31,7 +31,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectCase }) => {
     }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         {/* Header */}
-        <div style={{ marginBottom: spacing['3xl'] }}>
+        <div className="dashboard-hero" style={{ marginBottom: spacing['3xl'] }}>
+          <p style={{ ...typography.label, color: colors.primary, margin: 0, marginBottom: spacing.sm }}>Meter control center</p>
           <h1 style={{
             ...typography.heading_xl,
             color: colors.text_primary,
@@ -47,6 +48,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectCase }) => {
           }}>
             Select a case to analyze balance timelines, projections, and recharge strategies.
           </p>
+          <div className="hero-rule" />
         </div>
 
         {loading ? (
@@ -84,6 +86,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectCase }) => {
                   onSelectCase(caseItem.case_id);
                   navigate('/timeline');
                 }}
+                className="case-card"
                 style={{
                   ...skeumorphic.card(theme),
                   padding: spacing.lg,
@@ -251,7 +254,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectCase }) => {
             if (!file) return;
             try {
               const uploaded = await apiClient.uploadCase(await file.text());
-              onSelectCase(uploaded.case_id);
+              if (uploaded.length === 0) throw new Error('No cases found in the uploaded file.');
+              onSelectCase(uploaded[0].case_id);
               navigate('/timeline');
             } catch (error) {
               console.error(error);

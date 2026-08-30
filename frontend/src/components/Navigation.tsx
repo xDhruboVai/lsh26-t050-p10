@@ -34,7 +34,7 @@ const Navigation: React.FC<NavigationProps> = ({ selectedCaseId, onSelectCase })
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div style={{
+    <aside className="app-sidebar" style={{
       width: '280px',
       backgroundColor: colors.bg_secondary,
       borderRight: `1px solid ${colors.border_primary}`,
@@ -87,6 +87,7 @@ const Navigation: React.FC<NavigationProps> = ({ selectedCaseId, onSelectCase })
           Select Case
         </label>
         <select
+          className="case-select"
           value={selectedCaseId || ''}
           onChange={(e) => {
             const caseId = e.target.value;
@@ -107,7 +108,7 @@ const Navigation: React.FC<NavigationProps> = ({ selectedCaseId, onSelectCase })
           <option value="">Choose a case...</option>
           {cases.map((c) => (
             <option key={c.case_id} value={c.case_id}>
-              {c.case_id} through {new Date(c.today).toLocaleDateString('en-US', {
+              {c.case_id} | {new Date(c.today).toLocaleDateString('en-US', {
                 day: '2-digit', month: 'short', year: 'numeric'
               })}
             </option>
@@ -165,7 +166,7 @@ const Navigation: React.FC<NavigationProps> = ({ selectedCaseId, onSelectCase })
         <p style={{ margin: 0 }}>Prepaid Meter Billing Engine</p>
         <p style={{ margin: `${spacing.xs} 0 0 0`, fontStyle: 'italic' }}>v1.0</p>
       </div>
-    </div>
+    </aside>
   );
 };
 
