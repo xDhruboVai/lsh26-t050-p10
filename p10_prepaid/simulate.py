@@ -7,7 +7,7 @@ from .tariff import FIXED_CHARGE_TOTAL, cost_of_day, vat_on_energy
 
 
 def rebuild_balance_timeline(case: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """Rebuild the day-by-day balance timeline for a case per Section 3.1."""
+    """Rebuild the day-by-day balance timeline."""
     balance = Decimal(str(case.get("opening_balance_bdt", "0.00")))
     month_running_units = 0
     fixed_charges_applied_this_month = False
@@ -47,7 +47,6 @@ def rebuild_balance_timeline(case: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 
 def reconciliation_delta(case: Dict[str, Any], timeline: List[Dict[str, Any]]) -> Decimal:
-    """Check the Section 3.4 self-consistency equation exactly."""
     opening_balance = Decimal(str(case.get("opening_balance_bdt", "0.00")))
     all_recharges = sum(
         Decimal(str(item.get("amount_bdt", "0.00"))) for item in case.get("recharges", [])
