@@ -1,23 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from '../App';
 import { spacing, borders, skeumorphic } from '../theme';
-import { apiClient, CaseListItem } from '../api';
+import { CaseListItem } from '../api';
 
 interface NavigationProps {
   selectedCaseId: string | null;
   onSelectCase: (caseId: string) => void;
+  cases: CaseListItem[];
+  casesLoading: boolean;
 }
 
-const Navigation: React.FC<NavigationProps> = ({ selectedCaseId, onSelectCase }) => {
+const Navigation: React.FC<NavigationProps> = ({ selectedCaseId, onSelectCase, cases, casesLoading }) => {
   const { theme, colors } = useTheme();
   const location = useLocation();
-  const [cases, setCases] = useState<CaseListItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    apiClient.listCases().then(setCases).catch(console.error).finally(() => setLoading(false));
-  }, []);
 
   const navItems = [
     { path: '/', label: 'Household Overview', icon: '⊟' },
@@ -103,7 +99,7 @@ const Navigation: React.FC<NavigationProps> = ({ selectedCaseId, onSelectCase })
             cursor: 'pointer',
             ...skeumorphic.input(theme),
           }}
-          disabled={loading}
+          disabled={casesLoading}
         >
           <option value="">Choose a case...</option>
           {cases.map((c) => (

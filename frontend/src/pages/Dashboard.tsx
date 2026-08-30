@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../App';
 import { spacing, borders, skeumorphic, typography } from '../theme';
@@ -6,21 +6,15 @@ import { apiClient, CaseListItem } from '../api';
 
 interface DashboardProps {
   onSelectCase: (caseId: string) => void;
+  cases: CaseListItem[];
+  casesLoading: boolean;
+  refreshCases: () => Promise<void>;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ onSelectCase }) => {
+const Dashboard: React.FC<DashboardProps> = ({ onSelectCase, cases, casesLoading, refreshCases }) => {
   const { theme, colors } = useTheme();
   const navigate = useNavigate();
   const uploadInput = useRef<HTMLInputElement>(null);
-  const [cases, setCases] = useState<CaseListItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    apiClient.listCases()
-      .then(setCases)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
 
   return (
     <main style={{
@@ -39,7 +33,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectCase }) => {
             margin: 0,
             marginBottom: spacing.md,
           }}>
-            Prepaid Meter Analysis
+            Prepaid Meter Analyzer
           </h1>
           <p style={{
             ...typography.body,
@@ -51,7 +45,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectCase }) => {
           <div className="hero-rule" />
         </div>
 
-        {loading ? (
+        {casesLoading ? (
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -255,6 +249,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectCase }) => {
             try {
               const uploaded = await apiClient.uploadCase(await file.text());
               if (uploaded.length === 0) throw new Error('No cases found in the uploaded file.');
+              await refreshCases();
               onSelectCase(uploaded[0].case_id);
               navigate('/timeline');
             } catch (error) {
