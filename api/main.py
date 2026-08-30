@@ -166,6 +166,109 @@ def upload_case(document: dict):
         raise HTTPException(status_code=400, detail=str(error))
 
 
+@app.post("/api/analyze")
+def analyze_uploaded_case(document: dict):
+    """Analyze a supplied case without relying on server process memory.
+
+    Vercel may send consecutive requests to different serverless instances, so
+    an uploaded case cannot safely live only in CASES_CACHE. The browser keeps
+    the original JSON and supplies it with each analysis request instead.
+    """
+    try:
+        raw_case = document.get("case")
+        if not isinstance(raw_case, dict):
+            raise ValueError("A case object is required.")
+
+        # Work on a JSON copy because validation adds lookup maps to the case.
+        case = _prepare_case(json.loads(json.dumps(raw_case)))
+        case_id = case.get("case_id")
+        if not case_id:
+            raise ValueError("The uploaded case must include case_id.")
+        validate_case(case)
+
+        timeline = rebuild_balance_timeline(case)
+        entries = [TimelineEntry(
+            date=entry["date"],
+            units=int(case["_days_by_date"][entry["date"]]),
+            balance=str(entry["balance_after"]),
+            energy_cost=str(entry["energy_cost"]),
+            vat=str(entry["vat"]),
+            recharge=str(entry.get("recharge_amount_if_any", "0")),
+            slab_warning=None,
+        ) for entry in timeline]
+
+        requested_units = document.get("daily_units")
+        usage = int(case["usual_daily_units"] if requested_units is None else requested_units)
+        balance_today = timeline[-1]["balance_after"]
+        rod = run_out_date(balance_today, usage, case["today"]) or case["today"]
+        today = datetime.fromisoformat(case["today"])
+        days_remaining = (datetime.fromisoformat(rod) - today).days
+
+        requested_target = document.get("target_date")
+        target_date = case["target_date"] if requested_target is None else str(requested_target)
+        recharge = recharge_needed(balance_today, target_date, usage, case["today"])
+
+        habit_a = low_balance_habit(case)
+        habit_b = monthly_habit(case)
+        habits = [
+            ComparisonEntry(
+                habit="Low Balance Reactive",
+                total_cost=str(habit_a["total_cost"]),
+                energy_cost=str(habit_a["energy_total"]),
+                vat=str(habit_a["vat_total"]),
+                fixed_charges=str(habit_a["fixed_total"]),
+                fixed_charge_count=habit_a["fixed_charge_count"],
+                recharge_total=str(habit_a["recharge_total"]),
+            ),
+            ComparisonEntry(
+                habit="Monthly Proactive",
+                total_cost=str(habit_b["total_cost"]),
+                energy_cost=str(habit_b["energy_total"]),
+                vat=str(habit_b["vat_total"]),
+                fixed_charges=str(habit_b["fixed_total"]),
+                fixed_charge_count=habit_b["fixed_charge_count"],
+                recharge_total=str(habit_b["recharge_total"]),
+            ),
+        ]
+
+        monthly_costs = {}
+        for entry in timeline:
+            month = entry["date"][:7]
+            monthly_costs[month] = monthly_costs.get(month, Decimal("0.00")) + entry["energy_cost"] + entry["vat"]
+        months = sorted(monthly_costs)
+        monthly = [MonthlyComparisonEntry(
+            period=f"{first} / {second}",
+            first_month=first,
+            second_month=second,
+            first_cost=str(monthly_costs[first].quantize(Decimal("0.01"))),
+            second_cost=str(monthly_costs[second].quantize(Decimal("0.01"))),
+        ) for first, second in zip(months, months[1:])]
+
+        return {
+            "details": CaseDetailsResponse(
+                case_id=str(case_id),
+                opening_balance=str(case.get("opening_balance_bdt", "0")),
+                today=case["today"],
+                usual_daily_units=int(case["usual_daily_units"]),
+                target_date=case["target_date"],
+            ),
+            "timeline": entries,
+            "run_out": RunOutResponse(run_out_date=rod, days_remaining=days_remaining),
+            "recharge": RechargeResponse(
+                required_amount=str(recharge["required_amount"]),
+                base_energy=str(recharge["base_energy"]),
+                slab_penalty=str(recharge["slab_penalty"]),
+                fixed_charges=str(recharge["fixed_charges"]),
+                vat=str(recharge["vat"]),
+                breakdown_valid=True,
+            ),
+            "comparison": habits,
+            "monthly_comparison": monthly,
+        }
+    except Exception as error:
+        raise HTTPException(status_code=400, detail=str(error))
+
+
 @app.get("/api/cases/{case_id}", response_model=CaseDetailsResponse)
 def get_case_details(case_id: str):
     """Get case metadata."""
