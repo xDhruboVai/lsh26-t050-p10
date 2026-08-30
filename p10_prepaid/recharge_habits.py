@@ -48,6 +48,7 @@ def _run_habit(case: Dict[str, Any], mode: str) -> Dict[str, Any]:
     vat_total = Decimal("0.00")
     fixed_total = Decimal("0.00")
     fixed_charge_count = 0
+    recharge_total = Decimal("0.00")
 
     for row in _comparison_days(case):
         date_value = row["date"]
@@ -58,6 +59,7 @@ def _run_habit(case: Dict[str, Any], mode: str) -> Dict[str, Any]:
         if mode == "low_balance":
             if balance < threshold:
                 balance += low_amount
+                recharge_total += low_amount
                 if not fixed_charges_applied_this_month:
                     balance -= FIXED_CHARGE_TOTAL
                     fixed_total += FIXED_CHARGE_TOTAL
@@ -66,6 +68,7 @@ def _run_habit(case: Dict[str, Any], mode: str) -> Dict[str, Any]:
         elif mode == "monthly":
             if date_value.endswith("-01"):
                 balance += monthly_amount
+                recharge_total += monthly_amount
                 if not fixed_charges_applied_this_month:
                     balance -= FIXED_CHARGE_TOTAL
                     fixed_total += FIXED_CHARGE_TOTAL
@@ -87,15 +90,14 @@ def _run_habit(case: Dict[str, Any], mode: str) -> Dict[str, Any]:
         "vat_total": vat_total,
         "fixed_total": fixed_total,
         "fixed_charge_count": fixed_charge_count,
+        "recharge_total": recharge_total,
         "final_balance": balance,
     }
 
 
 def low_balance_habit(case: Dict[str, Any]) -> Dict[str, Any]:
-    """Model the low-balance recharge habit described in Section 5.2."""
     return _run_habit(case, "low_balance")
 
 
 def monthly_habit(case: Dict[str, Any]) -> Dict[str, Any]:
-    """Model the fixed monthly recharge habit described in Section 5.3."""
     return _run_habit(case, "monthly")

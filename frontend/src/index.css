@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Serif+Display&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3 {
+  font-family: 'DM Serif Display', Georgia, serif;
+}
+
+#root {
+  animation: page-arrive 480ms ease-out both;
+}
+
+@keyframes page-arrive {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, #root { animation: none !important; transition: none !important; }
+}
+
+/* Light mode */
+html[data-theme="light"], body[data-theme="light"] {
+  background-color: #EDE8F2;
+  color: #453750;
+}
+
+/* Dark mode */
+html[data-theme="dark"], body[data-theme="dark"] {
+  background-color: #0C0910;
+  color: #F8F6FA;
+}
+
+/* Remove default scrollbar styling for cleaner look */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+html[data-theme="dark"] ::-webkit-scrollbar-thumb,
+body[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+html[data-theme="dark"] ::-webkit-scrollbar-thumb:hover,
+body[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* Smooth transitions */
+* {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+button, input, select, textarea {
+  transition: all 0.2s ease;
+}
+
+/* Focus states for accessibility */
+button:focus, input:focus, select:focus, textarea:focus {
+  outline: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+/* Print styles */
+@media print {
+  body {
+    background-color: white;
+    color: black;
+  }
+}
