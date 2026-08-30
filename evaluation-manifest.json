@@ -3,10 +3,10 @@
   "team_id": "LSH26-T050",
   "problem_id": "P10",
   "repository_name": "lsh26-t050-p10",
-  "live_url": "https://hackathon-p10.vercel.app",
+  "live_url": "hackathon-p10.vercel.app",
   "demo_video_url_optional": "",
   "event_start_code": "LSH26-8490-C900",
-  "final_submission_commit_sha": "bbdd812599e038ce7d74ac5cea2c80d3e1a4b778",
+  "final_submission_commit_sha": "bf4fc320affa78601bb7ac09940d0a0b5f33d0bb",
   "repository_created_before_release": false,
   "pre_event_materials": [
     {
