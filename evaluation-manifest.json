@@ -1,0 +1,96 @@
+{
+  "release_version": "2.2",
+  "team_id": "LSH26-T050",
+  "problem_id": "P10",
+  "repository_name": "lsh26-t050-p10",
+  "live_url": "https://lsh26-t050-p10.vercel.app",
+  "demo_video_url_optional": "",
+  "event_start_code": "LSH26-8490-C900",
+  "final_submission_commit_sha": "2c0cbd470f53f5f33612a2a47b3e5b45a086c421",
+  "repository_created_before_release": false,
+  "pre_event_materials": [
+    {
+      "name": "None",
+      "source_or_original_location": "N/A",
+      "what_was_present_before_6pm": "Repository was empty"
+    }
+  ],
+  "sample_data": {
+    "loads_published_fixture": true,
+    "method": "file upload and seeded on start",
+    "reset_instructions": "Published test cases are provided in data/data.json and data/edge.json. Users can upload their own recharge history JSON or select from built-in cases. See frontend Dashboard.tsx for case selection and data loading."
+  },
+  "problem_solving_method": "Built a deterministic billing engine using Decimal arithmetic to precisely track meter consumption across tiered tariff slabs that reset monthly. Implemented day-by-day balance reconstruction with exact charge application (energy, VAT, fixed charges) at the exact slab level reached. The backend exposes calculation functions via REST API, and the frontend provides interactive timeline visualization, projection calculations, and habit comparison.",
+  "requirements": {
+    "R1": {
+      "status": "complete",
+      "evidence": "data/data.json contains household with 6 months of daily readings including light month (Jan 4.5 units/day avg), heavy month (June 14.8 units/day avg), and large recharge in final week (June recharges). Recharge history included. See p10_prepaid/loader.py for parsing."
+    },
+    "R2": {
+      "status": "complete",
+      "evidence": "Timeline page (/projection endpoint) shows day-by-day balance with recharges marked. Tariff applied per problem spec: slabs 1-75/4.63, 76-200/5.26, 201-300/5.63, 301-400/5.83, 401-600/9.30, 601+/10.70. Demand 42 taka and meter rent 40 taka on first recharge each month. VAT 5% on energy. See p10_prepaid/balance_rebuild.py and p10_prepaid/tariff.py."
+    },
+    "R3": {
+      "status": "complete",
+      "evidence": "Projection page (Questions.tsx and family_projection.py) shows run-out date based on today's balance and usual daily units. Recharge breakdown shows energy cost (by slab), next-slab effect, fixed charges, and VAT. Exact routing at /api/project/{case_id}/{target_date}."
+    },
+    "R4": {
+      "status": "complete",
+      "evidence": "Comparison page (/comparison endpoint) compares low-balance vs monthly recharge habits over identical 3 months with identical consumption. Uses comparison.source='readings' or 'fixed' from data.json. Validates R-16 (identical consumption, slab counter reset, no slab gaming). See p10_prepaid/recharge_habits.py."
+    }
+  },
+  "bonus_features": [
+    {
+      "feature": "Slab warning and next-unit cost",
+      "status": "complete",
+      "evidence": "Projection page shows slab thresholds and warns when monthly total approaches next tier. Next unit cost displayed. See TariffReference.tsx and diagnostics.py."
+    },
+    {
+      "feature": "Bill breakdown",
+      "status": "complete",
+      "evidence": "Bill summary shows energy amount, demand charge, meter rent, VAT, and total. See Projection.tsx breakdown section and diagnostics.py."
+    }
+  ],
+  "team_members": [
+    {
+      "registered_name": "Dihan Islam Dhrubo",
+      "github_username": "xDhruboVai",
+      "major_contribution": "Full-stack implementation of prepaid meter billing engine with deterministic tariff calculations, API backend, and interactive React UI. Implemented all required features: data model, tariff engine, balance rebuild, family projections, habit comparison, and bonus diagnostics.",
+      "evidence_paths_or_commits": [
+        "fb148cc Project Architecture and Tariff calculation",
+        "cac7bc6 load",
+        "d4010fd simulationization ;)",
+        "10930bc questions",
+        "252fcd5 compare",
+        "93c1d6f UI/UX",
+        "p10_prepaid/ (Python billing engine: tariff.py, loader.py, balance_rebuild.py, family_projection.py, recharge_habits.py, diagnostics.py)",
+        "api/main.py (FastAPI backend with all endpoints)",
+        "frontend/src/ (React + TypeScript UI with all pages)",
+        "tests/ (unit tests for tariff and comparisons)"
+      ]
+    }
+  ],
+  "major_design_decisions": [
+    "Chose Decimal arithmetic over float to avoid rounding errors in financial calculations",
+    "Implemented daily slab tracking with month-reset logic to correctly model tiered pricing",
+    "Separated tariff engine (p10_prepaid/) from API layer for testability and CLI reusability",
+    "Used Vercel deployment for zero-config frontend hosting with FastAPI backend",
+    "Implemented state-based UI with Zustand for cleaner component logic and data flow",
+    "Built comprehensive test suite covering edge cases: leap years, slab boundaries, month transitions"
+  ],
+  "known_limitations": [
+    "Meter historical data upload (bonus #2) accepts JSON format matching published schema; real meter data formats vary by manufacturer",
+    "UI assumes browser viewport >= 768px width; mobile layout not optimized",
+    "Backend assumes valid JSON input; no rate limiting or authentication (suitable for development/demo)",
+    "Comparison feature requires explicit daily_units when source='fixed' (cannot auto-detect real consumption patterns)"
+  ],
+  "ai_tools_used": [
+    {
+      "tool": "GitHub Copilot",
+      "used_for": "Code generation for React components, TypeScript type definitions, Python utility functions, and test boilerplate",
+      "how_output_was_verified": "Each generated code snippet reviewed for correctness against problem spec, tested against published test cases, and manually validated for tariff logic and edge case handling"
+    }
+  ],
+  "licenses_file": "LICENSES.md",
+  "declaration": "The information above is complete and truthful to the best of the team's knowledge."
+}

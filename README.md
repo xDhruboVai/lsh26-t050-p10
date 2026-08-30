@@ -2,10 +2,54 @@
 
 A deterministic prepaid meter billing engine with an industrial-grade web UI. This project implements the exact prepaid meter policy using `Decimal` arithmetic and fixed tariff rules. No machine learning or forecasting is used for core calculations.
 
+**Event:** LSH26 Problem-Solving Challenge  
+**Team:** LSH26-T050  
+**Problem:** P10 (Prepaid Meter Recharge Advisor)  
+**Event Start Code:** LSH26-8490-C900  
+**Live URL:** https://lsh26-t050-p10.vercel.app  
+
+## Problem Overview
+
+A family in Dhaka runs on a prepaid electricity meter with tiered pricing that resets monthly. Electricity costs more per unit the more the household uses in a calendar month. When the meter "beeps" (balance low), the family recharges, often a large amount late in the month, paying the highest slab rates without visibility into actual costs.
+
+**The tool solves four required problems:**
+
+1. **Data Creation** — Household with 6+ months of daily readings and recharge history, including light month, heavy summer month, and large late-month recharge
+2. **Balance Reconstruction** — Day-by-day timeline showing actual meter balance with slab-based tariff charges, fixed monthly charges, and VAT
+3. **Family Questions** — When will balance run out? How much to recharge now to last until a target date? (with cost breakdown)
+4. **Habit Comparison** — Compare low-balance reactive recharging vs proactive monthly recharging on identical consumption over 3 months; show actual cost difference
+
+**Plus optional bonuses:** Slab-crossing warnings, real meter data reconciliation, bill breakdown.
+
 The application consists of three layers:
 1. **Python billing engine** — Deterministic calculations against fixed tariff rules
 2. **FastAPI backend** — REST API exposing billing functions
 3. **React + TypeScript frontend** — Neumorphic, premium UI with dark/light modes
+
+## Key Features
+
+- ✅ **Exact Tariff Implementation** — Five-tier slab pricing (1-75, 76-200, 201-300, 301-400, 401-600, 601+) per 2026 Bangladesh tariff
+- ✅ **Deterministic Calculations** — `Decimal` arithmetic ensures financial accuracy; no floating-point rounding errors
+- ✅ **Monthly Slab Reset** — Slab counter resets on day 1 of each month, not on recharge (critical rule)
+- ✅ **Fixed Charges & VAT** — Demand charge (42 BDT), meter rent (40 BDT), VAT (5% on energy only)
+- ✅ **Balance Timeline** — Interactive chart showing day-by-day meter balance with recharges marked
+- ✅ **Run-Out Date Calculation** — Predicts when balance exhausts based on current usage habits
+- ✅ **Recharge Sizing** — Calculates exact amount needed to last until a user-selected date, with cost breakdown by component
+- ✅ **Habit Comparison** — Compares two recharge strategies (reactive low-balance vs proactive monthly) on identical consumption
+- ✅ **Bonus: Slab Warnings** — Alerts user when monthly total approaches next slab threshold
+- ✅ **Bonus: Bill Breakdown** — Shows energy amount, demand charge, meter rent, VAT, and total for any period
+- ✅ **Light/Dark Themes** — Premium neumorphic UI with full dual-theme support
+
+## Problem Solving Method
+
+The approach prioritized **exact specification compliance** and **deterministic correctness**:
+
+1. **Tariff Engine First** — Implemented slab pricing, fixed charges, and VAT logic in isolation with comprehensive unit tests
+2. **Slab Tracking Model** — Built day-by-day balance reconstruction to track cumulative units and slab boundaries, with month-boundary resets
+3. **Projection Engine** — Direct calculation of run-out dates and recharge amounts (no simulation or iterative guessing)
+4. **Comparison Framework** — Identical consumption model ensures no artificial slab arbitrage; difference only from fixed-charge count
+5. **Full-Stack API** — REST endpoints expose all engine functions for the frontend to call
+6. **Interactive UI** — React components consume API and visualize results with Recharts for timeline and comparison charts
 
 ## Workspace layout
 
@@ -254,3 +298,117 @@ The application uses React Router for navigation, Axios for API requests, and Ty
 - Ensure all Python dependencies are installed: `pip install -r requirements.txt`
 - Verify Python 3.11+ is in use
 - Run from project root with venv activated
+
+## Requirements Compliance
+
+| Item | Status | Evidence |
+|---|---|---|
+| **R1: Test Data** | ✅ Complete | 6+ months of daily readings (Jan–Jun 2026) with light month (Jan avg 4.5 units/day), heavy month (June avg 14.8 units/day), large late-month recharge (June). See `data/data.json` |
+| **R2: Balance Timeline** | ✅ Complete | Timeline page shows day-by-day balance with exact tariff charges, slab tracking, fixed charges on first recharge/month, VAT. Verified against published tariff. See `p10_prepaid/balance_rebuild.py` |
+| **R3: Family Questions** | ✅ Complete | Projection page shows run-out date and recharge sizing with breakdown (energy by slab, next-slab effect, fixed charges, VAT). See `family_projection.py` |
+| **R4: Habit Comparison** | ✅ Complete | Comparison page shows reactive vs proactive recharging over 3 identical-consumption months. Validates R-16 (no slab gaming). See `recharge_habits.py` |
+| **Bonus #1: Slab Warning** | ✅ Complete | Projection page warns when monthly total nears slab boundary and shows next-unit cost. See `diagnostics.py` |
+| **Bonus #2: Real Data Reconciliation** | ✅ Partial | Accepts user-uploaded JSON; compares against rebuilt balance. Format must match published schema. |
+| **Bonus #3: Bill Breakdown** | ✅ Complete | Bill summary shows energy amount, demand charge, meter rent, VAT, and total for current month. See `diagnostics.py` |
+
+## Testing and Validation
+
+All 19 unit tests pass:
+- `test_tariff.py` — Slab pricing, fixed charges, VAT calculations
+- `test_loader.py` — JSON parsing and validation
+- `test_simulate.py` — Day-by-day balance reconstruction
+- `test_questions.py` — Run-out date and recharge sizing
+- `test_compare.py` — Habit comparison logic
+- `test_bonus.py` — Bonus features (slab warnings, bill breakdown)
+
+Run tests:
+```bash
+python -m pytest -q
+```
+
+Tested against:
+- `data/data.json` (3 main cases: PUB-01, PUB-02, PUB-03)
+- `data/edge.json` (5 edge cases including leap year, same-day recharges, month boundaries)
+- `data/aman_edge.json` (25 stress-test cases covering all slab thresholds and edge scenarios)
+
+## Deployment
+
+**Live Deployment:**
+- Frontend: Vercel (auto-deploy from main branch)
+- Backend: Can be deployed to any Python-capable hosting (Render, Fly.io, etc.)
+
+**For local development:**
+```bash
+bash script.sh
+```
+
+**For production:**
+1. Deploy FastAPI to backend (e.g., `uvicorn api.main:app --port $PORT`)
+2. Deploy React frontend to Vercel/Netlify with API URL env var
+3. Update `frontend/src/api.ts` with production API endpoint
+
+## Design and Architecture
+
+### Python Billing Engine (`p10_prepaid/`)
+
+The core calculation logic is split into focused modules:
+
+| Module | Purpose |
+|---|---|
+| `tariff.py` | Slab pricing (1-75 @ 4.63, 76-200 @ 5.26, ..., 601+ @ 10.70), VAT (5% on energy), fixed charges (82 BDT on first recharge/month) |
+| `loader.py` | Parse JSON cases, validate schemas, convert currency to `Decimal` |
+| `balance_rebuild.py` | Simulate day-by-day balance with exact charge application per slab reached |
+| `family_projection.py` | Calculate run-out date and recharge amount for target date |
+| `recharge_habits.py` | Compare low-balance (reactive) vs monthly (proactive) recharge strategies |
+| `diagnostics.py` | Generate slab warnings, next-unit costs, and bill summaries |
+
+All modules use `decimal.Decimal` for financial accuracy and are independently unit-tested.
+
+### FastAPI Backend (`api/main.py`)
+
+REST endpoints expose all engine functions:
+- `/api/cases` — List or upload cases
+- `/api/timeline/{case_id}` — Balance timeline (date, balance, energy, VAT, recharges)
+- `/api/run-out/{case_id}` — Run-out date and days remaining
+- `/api/recharge-needed/{case_id}` — Recharge amount for target date
+- `/api/comparison/{case_id}` — Habit comparison results
+
+All endpoints return Pydantic models (type-safe JSON).
+
+### React Frontend (`frontend/src/`)
+
+Multi-page SPA with sidebar navigation:
+
+| Page | Purpose |
+|---|---|
+| Dashboard | Case selector (built-in or upload) |
+| Usage Timeline | Day-by-day balance chart and table |
+| Recharge Planner | Run-out date and recharge sizing |
+| Habit Comparison | Side-by-side comparison of strategies |
+| Power Planning Hub | Confirm assumptions and target date |
+| Tariff Reference | View rates and calculate custom costs |
+| Settings | Light/dark theme toggle |
+
+Design uses neumorphic raised/recessed surfaces with a premium utility aesthetic. Theme colors and styles centralized in `theme.ts`. Charts powered by Recharts.
+
+## Known Limitations
+
+- Real meter data upload accepts only JSON matching published schema; manufacturer formats vary
+- UI designed for desktop/tablet (≥768px); mobile layout not optimized
+- Backend has no rate limiting, authentication, or persistence (suitable for demo/development)
+- Comparison with `source: 'fixed'` requires explicit `daily_units` input (cannot auto-detect real patterns)
+
+## License and Attribution
+
+See [LICENSES.md](LICENSES.md) for third-party material, frameworks, and AI tool disclosure.
+
+**Original work:** All billing engine logic, API backend, and UI frontend created by LSH26-T050 during the LSH26 event window.
+
+**AI assistance:** GitHub Copilot was used for code generation (React components, TypeScript types, Python utilities, test boilerplate). All generated code was reviewed against the P10 specification, tested against published test cases, and manually validated for tariff correctness.
+
+## Getting Help
+
+- **Problem spec clarifications:** See [CLARIFICATIONS.md](CLARIFICATIONS.md)
+- **Evaluation details:** See [evaluation-manifest.json](evaluation-manifest.json)
+- **Bug reports:** File an issue in the repository
+- **Technical questions:** Review the docstrings in `p10_prepaid/*.py` and React component comments
