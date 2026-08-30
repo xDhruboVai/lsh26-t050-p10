@@ -4,9 +4,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Dict
 
-from .tariff import FIXED_CHARGE_TOTAL, SLAB_TABLE, cost_of_day, vat_on_energy
-
-_SLAB_1_RATE = SLAB_TABLE[0][2]
+from .tariff import FIXED_CHARGE_TOTAL, cost_of_day, vat_on_energy
 
 
 def run_out_date(
@@ -42,7 +40,8 @@ def recharge_needed(
     """Compute the smallest recharge needed so the balance stays non-negative through target_date.
 
     Returns a breakdown dict:
-      {required_amount, base_energy, slab_penalty, fixed_charges, vat}
+      {required_amount, base_energy, fixed_charges, vat}
+    base_energy here equals the actual total energy cost (no separate slab penalty line).
     All values are Decimal quantized to 2 decimal places.
     """
     if usual_daily_units < 0:
@@ -53,10 +52,7 @@ def recharge_needed(
     current_date = datetime.strptime(start_date, "%Y-%m-%d")
 
     actual_energy = Decimal("0.00")
-    base_energy_acc = Decimal("0.00")
     months_spanned: set[str] = set()
-
-    start_datetime = current_date
 
     while current_date.date() <= target:
         months_spanned.add(current_date.strftime("%Y-%m"))
@@ -64,14 +60,9 @@ def recharge_needed(
             month_running_units = 0
         energy_cost, month_running_units, _ = cost_of_day(month_running_units, usual_daily_units)
         actual_energy += energy_cost
-        base_energy_acc += (Decimal(usual_daily_units) * _SLAB_1_RATE).quantize(Decimal("0.01"))
         current_date += timedelta(days=1)
 
     vat_total = vat_on_energy(actual_energy)
-    slab_penalty = (actual_energy - base_energy_acc).quantize(Decimal("0.01"))
-    if slab_penalty < 0:
-        slab_penalty = Decimal("0.00")
-
     fixed = (FIXED_CHARGE_TOTAL * Decimal(len(months_spanned))).quantize(Decimal("0.01"))
 
     total_needed = (actual_energy + vat_total + fixed).quantize(Decimal("0.01"))
@@ -81,8 +72,7 @@ def recharge_needed(
 
     return {
         "required_amount": required,
-        "base_energy": base_energy_acc.quantize(Decimal("0.01")),
-        "slab_penalty": slab_penalty,
+        "base_energy": actual_energy.quantize(Decimal("0.01")),
         "fixed_charges": fixed,
         "vat": vat_total.quantize(Decimal("0.01")),
     }
